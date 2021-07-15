@@ -79,7 +79,7 @@ class UnBlockBotDialog extends ComponentDialog {
         console.log('Step:', step);
     
         // We can send messages to the user at any point in the WaterfallStep.
-        return await step.prompt(TEXT_PROMPT, 'Would you like to proceed?');
+        return await step.prompt(TEXT_PROMPT, 'Would you like to proceed? Hi');
     
     }
 
