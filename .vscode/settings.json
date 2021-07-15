@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/7a666356-a55d-4a88-9c92-726d9cb06f76/resourceGroups/toad-test-unblock-bot/providers/Microsoft.Web/sites/toad-unblock-bot",
+    "appService.deploySubpath": "."
+}
