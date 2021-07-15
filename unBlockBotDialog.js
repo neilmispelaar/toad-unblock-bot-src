@@ -46,9 +46,12 @@ class UnBlockBotDialog extends ComponentDialog {
             this.intentConfirmStep.bind(this),
             this.testintentConfirmStep.bind(this),
             this.roeEmployerLookIntoStep.bind(this),
+            this.testroeEmployerLookIntoStep.bind(this),
             this.emailPromptStep.bind(this),
             this.emailProvidedStep.bind(this),
+            this.testEmailProvidedStep.bind(this),
             this.notifyEmailStep.bind(this),
+            this.testNotifyEmailStep.bind(this),
             this.emailStep.bind(this),
             this.closeStep.bind(this),      
         ]));
@@ -187,7 +190,7 @@ class UnBlockBotDialog extends ComponentDialog {
 
     }
 
-    async confirmRoeEmployerLookIntoStep(step) {
+    async testroeEmployerLookIntoStep(step) {
 
         const recognizer = new LuisRecognizer({
             applicationId: process.env.LuisAppId,
@@ -218,6 +221,10 @@ class UnBlockBotDialog extends ComponentDialog {
     }
 
     async emailPromptStep(step) {
+
+        // We can send messages to the user at any point in the WaterfallStep.
+        return await step.prompt(TEXT_PROMPT, 'Ok, what email address should I send it to?');
+        
         if (step.result) {
             // User said "yes" so we will be prompting for the next thing.
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
@@ -242,12 +249,13 @@ class UnBlockBotDialog extends ComponentDialog {
             await step.context.sendActivity(`Ok, email sent to ${step.values.email}`);
             
             // We can send messages to the user at any point in the WaterfallStep.
-            const promptOptions = { 
-                prompt: 'Do you want me to notify you when we’ve received the Record of Employment?', 
-                retryPrompt: ['yes', 'no'] 
-            };
+            //const promptOptions = { 
+            //    prompt: 'Do you want me to notify you when we’ve received the Record of Employment?', 
+            //    retryPrompt: ['yes', 'no'] 
+            //};
 
-            return await step.prompt(CONFIRM_PROMPT, promptOptions);
+            // We can send messages to the user at any point in the WaterfallStep.
+            return await step.prompt(TEXT_PROMPT, 'Do you want me to notify you when we’ve received the Record of Employment?');
 
         } else {
             // User said "no" so we will skip the next step. Give -1 as the age.
@@ -256,7 +264,42 @@ class UnBlockBotDialog extends ComponentDialog {
 
     }
 
+    async testEmailProvidedStep(step) {
+
+        const recognizer = new LuisRecognizer({
+            applicationId: process.env.LuisAppId,
+            endpointKey: process.env.LuisAPIKey,
+            endpoint: `https://${ process.env.LuisAPIHostName }.api.cognitive.microsoft.com`
+        }, {
+            includeAllIntents: true,
+            includeInstanceData: true
+        }, true);
+
+        // Call prompts recognizer
+        const recognizerResult = await recognizer.recognize(step.context);
+
+        // Top intent tell us which cognitive service to use.
+        const intent = LuisRecognizer.topIntent(recognizerResult);
+
+        switch(intent) {
+            case 'confirmChoicePositive':
+                console.log("INTENT: ", intent)
+                return await step.next();
+                break;
+            default: {
+                console.log("END")
+                return await step.endDialog();
+            }
+        }
+
+    }
+
     async notifyEmailStep(step) {
+
+        // We can send messages to the user at any point in the WaterfallStep.
+        return await step.prompt(TEXT_PROMPT, 'What’s the best way to reach you? I can do email or text message (or both).');
+
+
         if (step.result) {
             // User said "yes" so we will be prompting for the next thing.
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
@@ -275,7 +318,46 @@ class UnBlockBotDialog extends ComponentDialog {
 
     }
 
+    async testNotifyEmailStep(step) {
+
+        const recognizer = new LuisRecognizer({
+            applicationId: process.env.LuisAppId,
+            endpointKey: process.env.LuisAPIKey,
+            endpoint: `https://${ process.env.LuisAPIHostName }.api.cognitive.microsoft.com`
+        }, {
+            includeAllIntents: true,
+            includeInstanceData: true
+        }, true);
+
+        // Call prompts recognizer
+        const recognizerResult = await recognizer.recognize(step.context);
+
+        // Top intent tell us which cognitive service to use.
+        const intent = LuisRecognizer.topIntent(recognizerResult);
+
+        switch(intent) {
+            case 'confirmChoiceEmail':
+                console.log("INTENT: ", intent)
+                return await step.next();
+                break;
+            default: {
+                console.log("END")
+                return await step.endDialog();
+            }
+        }
+
+    }
+
     async emailStep(step) {
+
+        await step.context.sendActivity("Ok, we'll email you at ___@____.com  once we gotten your Record of Employment.");
+
+        // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: 'Before you go, could I ask you to rate the service you received today?',
+            choices: ChoiceFactory.toChoices(['😡', '🙁', '😐', '🙂', '😄'])  
+        });
+
         if (step.result) {
             // User said "yes" so we will be prompting for the next thing.
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
