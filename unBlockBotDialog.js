@@ -45,7 +45,6 @@ class UnBlockBotDialog extends ComponentDialog {
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.intentConfirmStep.bind(this),
             this.testintentConfirmStep.bind(this),
-            this.lookintoConfirmStep.bind(this),
             this.roeEmployerLookIntoStep.bind(this),
             this.emailPromptStep.bind(this),
             this.emailProvidedStep.bind(this),
@@ -79,7 +78,7 @@ class UnBlockBotDialog extends ComponentDialog {
         console.log('Step:', step);
     
         // We can send messages to the user at any point in the WaterfallStep.
-        return await step.prompt(TEXT_PROMPT, 'Would you like to proceed? Hi');
+        return await step.prompt(TEXT_PROMPT, 'I looked at your application and I can see there’s a block on your file. Do you want me to look into that?');
     
     }
 
@@ -104,56 +103,33 @@ class UnBlockBotDialog extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult);
 
-        console.log("INTENT" , intent);
-
-        await step.context.sendActivity(intent);
-
-        /*
-        recognizer.recognize(step.context, function (err, result) {
-            // If the intent returned isn't the 'None' intent return it
-            // as the prompts response.
-            if (result && result.intent !== 'None') {
-
-                // callback(null, result.score, result);
-                
-
-            } else {
-
-                // callback(null, 0.0);
-                console.log ("No intent recognised");
-
-            }
-        });
-        */
-
         
-        // Top intent tell us which cognitive service to use.
-        // const intent = LuisRecognizer.topIntent(recognizerResult);
 
-
-
-    
-        // We can send messages to the user at any point in the WaterfallStep.
-        return await step.next(-1);
-    
-    }
-
-    async lookintoConfirmStep(step) {
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-        const promptOptions = { 
-            prompt: 'I looked at your application and I can see there’s a block on your file. Do you want me to look into that?', 
-            retryPrompt: ['yes', 'no'],
-        };
-
-        console.log('Step:', step);
-
-        return await step.prompt(CONFIRM_PROMPT, promptOptions);
+        switch(intent) {
+            case 'confirmChoicePositive':
+                console.log("INTENT: ", intent)
+                return await step.next();
+                break;
+            default: {
+                console.log("END")
+                return await step.endDialog();
+            }
+        }
+       
     }
 
     async roeEmployerLookIntoStep(step) {
         
-        
-        
+         // We can send messages to the user at any point in the WaterfallStep.
+         await step.context.sendActivity('So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Romlinson.');
+
+         const promptOptions = { 
+             prompt: 'If you like, I can send (former employer) a follow-up email from the Government of Canada. That usually does the trick 😉', 
+             retryPrompt: ['yes', 'no'] 
+         };
+
+        return await step.prompt(CONFIRM_PROMPT, promptOptions);
+        /*
         if (step.result) {
             // User said "yes" so we will be prompting for the next thing.
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
@@ -171,7 +147,7 @@ class UnBlockBotDialog extends ComponentDialog {
         } else {
             // User said "no" so we will skip the next step. Give -1 as the age.
             return await step.endDialog();
-        }
+        }*/
 
     }
 
