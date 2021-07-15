@@ -123,6 +123,42 @@ class UnBlockBotDialog extends ComponentDialog {
          // We can send messages to the user at any point in the WaterfallStep.
          await step.context.sendActivity('So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Romlinson.');
 
+          // We can send messages to the user at any point in the WaterfallStep.
+        return await step.prompt(TEXT_PROMPT, 'If you like, I can send (former employer) a follow-up email from the Government of Canada. That usually does the trick 😉');
+
+         // We can send messages to the user at any point in the WaterfallStep.
+        return await step.prompt(TEXT_PROMPT, 'I looked at your application and I can see there’s a block on your file. Do you want me to look into that?');
+
+
+         const recognizer = new LuisRecognizer({
+            applicationId: process.env.LuisAppId,
+            endpointKey: process.env.LuisAPIKey,
+            endpoint: `https://${ process.env.LuisAPIHostName }.api.cognitive.microsoft.com`
+        }, {
+            includeAllIntents: true,
+            includeInstanceData: true
+        }, true);
+
+        // Call prompts recognizer
+        const recognizerResult = await recognizer.recognize(step.context);
+
+        // Top intent tell us which cognitive service to use.
+        const intent = LuisRecognizer.topIntent(recognizerResult);
+
+        
+
+        switch(intent) {
+            case 'confirmChoicePositive':
+                console.log("INTENT: ", intent)
+                return await step.next();
+                break;
+            default: {
+                console.log("END")
+                return await step.endDialog();
+            }
+        }
+
+
          const promptOptions = { 
              prompt: 'If you like, I can send (former employer) a follow-up email from the Government of Canada. That usually does the trick 😉', 
              retryPrompt: ['yes', 'no'] 
@@ -148,6 +184,36 @@ class UnBlockBotDialog extends ComponentDialog {
             // User said "no" so we will skip the next step. Give -1 as the age.
             return await step.endDialog();
         }*/
+
+    }
+
+    async confirmRoeEmployerLookIntoStep(step) {
+
+        const recognizer = new LuisRecognizer({
+            applicationId: process.env.LuisAppId,
+            endpointKey: process.env.LuisAPIKey,
+            endpoint: `https://${ process.env.LuisAPIHostName }.api.cognitive.microsoft.com`
+        }, {
+            includeAllIntents: true,
+            includeInstanceData: true
+        }, true);
+
+        // Call prompts recognizer
+        const recognizerResult = await recognizer.recognize(step.context);
+
+        // Top intent tell us which cognitive service to use.
+        const intent = LuisRecognizer.topIntent(recognizerResult);
+
+        switch(intent) {
+            case 'confirmChoicePositive':
+                console.log("INTENT: ", intent)
+                return await step.next();
+                break;
+            default: {
+                console.log("END")
+                return await step.endDialog();
+            }
+        }
 
     }
 
