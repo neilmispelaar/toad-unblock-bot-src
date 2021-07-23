@@ -15,8 +15,11 @@ const {
     TextPrompt,
     WaterfallDialog
 } = require('botbuilder-dialogs');
+
+const { Step1, STEP_1 } = require('./Step1');
+
 const { Channels } = require('botbuilder-core');
-const { UserProfile } = require('./userProfile');
+const { UserProfile } = require('../userProfile');
 
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -34,7 +37,7 @@ class UnBlockBotDialog extends ComponentDialog {
 
         // this.userProfile = userState.createProperty(USER_PROFILE);
         // 
-
+        this.addDialog(new Step1());
         this.addDialog(new TextPrompt(TEXT_PROMPT));
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
@@ -78,6 +81,8 @@ class UnBlockBotDialog extends ComponentDialog {
 
     async intentConfirmStep(step) {
 
+        return await step.beginDialog(STEP_1);
+
         console.log('Step:', step);
     
         // We can send messages to the user at any point in the WaterfallStep.
@@ -106,16 +111,16 @@ class UnBlockBotDialog extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult);
 
-        
-
         switch(intent) {
+            // Proceed
             case 'confirmChoicePositive':
                 console.log("INTENT: ", intent)
                 return await step.next();
                 break;
             default: {
-                console.log("END")
-                return await step.endDialog();
+                // Catch all 
+                console.log("END");
+                return await intentConfirmStep(step.context, cancellationToken);
             }
         }
        
