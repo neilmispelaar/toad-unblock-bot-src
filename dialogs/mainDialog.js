@@ -22,7 +22,8 @@ class MainDialog extends ComponentDialog {
         this.addDialog(new TopLevelDialog());
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.initialStep.bind(this),
-            this.finalRateStep.bind(this)
+            this.finalRateStep.bind(this),
+            this.finalStep.bind(this),
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -53,21 +54,10 @@ class MainDialog extends ComponentDialog {
         
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await stepContext.prompt(CHOICE_PROMPT, {
-            prompt: 'Before you go, could I ask you to rate the service you received today?',
+            prompt: 'Before you go, could I ask you to rate the service you received today? 😡 🙁 😐 🙂 😄',
             choices: ChoiceFactory.toChoices(['😡', '🙁', '😐', '🙂', '😄'])  
         });
 
-       
-
-        
-        
-        const userInfo = stepContext.result;
-
-        const status = 'You are signed up to review ' +
-            (userInfo.companiesToReview.length === 0 ? 'no companies' : userInfo.companiesToReview.join(' and ')) + '.';
-        await stepContext.context.sendActivity(status);
-        await this.userProfileAccessor.set(stepContext.context, userInfo);
-        return await stepContext.endDialog();
     }
 
     async finalStep(stepContext) {
