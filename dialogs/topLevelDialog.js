@@ -34,11 +34,9 @@ class TopLevelDialog extends ComponentDialog {
             this.step2.bind(this),
             this.step2confirm.bind(this),
             this.step3.bind(this),
-            this.step3confirm.bind(this),
             this.step4.bind(this),
             this.step4confirm.bind(this),
             this.step5.bind(this),
-            this.step5confirm.bind(this),
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -101,7 +99,7 @@ class TopLevelDialog extends ComponentDialog {
         // Set the user's name to what they entered in response to the name prompt.
         //stepContext.values.userInfo.name = stepContext.result;
 
-        console.log('Step Result', stepContext.result)
+        console.log('Step Result Step 3 confirm', stepContext.result)
 
         // User wants to be contacted
         if (stepContext.result === true) { 
@@ -133,43 +131,24 @@ class TopLevelDialog extends ComponentDialog {
         // User wants to end
         if (stepContext.result === true) { 
 
-            return await stepContext.beginDialog(STEP_4);
+            return await stepContext.next();
         }
         else { 
 
             await stepContext.context.sendActivity("Sounds good, that's all for now then.");
 
-            return await stepContext.next();
+            return await stepContext.endDialog();
         }
 
     }
 
     async step5(stepContext) {
         
-        return await stepContext.beginDialog(STEP_4);
+        return await stepContext.beginDialog(STEP_5);
 
     }
 
-    async step5confirm(stepContext) {
-        // Set the user's name to what they entered in response to the name prompt.
-        //stepContext.values.userInfo.name = stepContext.result;
-
-        console.log('Step Result', stepContext.result)
-
-        // User wants to end
-        if (stepContext.result === true) { 
-
-            return await stepContext.beginDialog(STEP_4);
-        }
-        else { 
-
-            await stepContext.context.sendActivity("Sounds good, that's all for now then.");
-
-            return await stepContext.next();
-        }
-
-    }
-
+  
 
 
 

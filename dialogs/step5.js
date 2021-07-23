@@ -29,6 +29,7 @@ class Step5 extends ComponentDialog {
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.notifyEmailStep.bind(this),
             this.testNotifyEmailStep.bind(this),
+            this.emailStep.bind(this),
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -72,7 +73,9 @@ class Step5 extends ComponentDialog {
 
     async emailStep(step) {
 
-        await step.context.sendActivity("Ok, we'll email you at ___@____.com  once we gotten your Record of Employment.");
+        await step.context.sendActivity("Ok, we'll email you at person@domain.com  once we gotten your Record of Employment.");
+
+        await step.context.sendActivity("That's all for now.");
 
         return await step.endDialog();
 
