@@ -1,7 +1,7 @@
 const {
     TextPrompt,
     ComponentDialog,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -11,6 +11,9 @@ const CONFIRM_NOTIFY_ROE_RECEIVED_STEP = 'CONFIRM_NOTIFY_ROE_RECEIVED_STEP';
 const CONFIRM_NOTIFY_ROE_RECEIVED_STEP_WATERFALL_STEP = 'GCONFIRM_NOTIFY_ROE_RECEIVED_STEP_WATERFALL_STEP';
 
 const MAX_ERROR_COUNT = 3;
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class ConfirmNotifyROEReceivedStep extends ComponentDialog {
     constructor() {
@@ -25,6 +28,7 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         ]));
 
         this.initialDialogId = CONFIRM_NOTIFY_ROE_RECEIVED_STEP_WATERFALL_STEP;
+        this.locale = en;
     }
 
     /**
@@ -32,6 +36,10 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
      *
      */
     async initialStep(stepContext) {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
+            this.locale = fr;
+        }
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
 
@@ -39,10 +47,10 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         console.log('DEBUG UNBLOCKBOTDETAILS in confirmNotifyROEReceivedStep:', unblockBotDetails);
 
         // Set the text for the prompt
-        const standardPromptMsg = 'Do you want me to notify you when we’ve received the Record of Employment?';
+        const standardPromptMsg = this.locale.confirmNotifyROEReceivedStep;
 
         // Set the text for the retry prompt
-        const retryPromptMsg = 'Sorry, I didn\'t quite get that. Do you want me to notify you when we’ve received the Record of Employment?';
+        const retryPromptMsg = this.locale.confirmNotifyROEReceivedStepRetry;
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmNotifyROEReceivedStep >= MAX_ERROR_COUNT) {
@@ -57,19 +65,15 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         // If it is false the user does not want to proceed
         if (unblockBotDetails.confirmNotifyROEReceivedStep === null || unblockBotDetails.confirmNotifyROEReceivedStep === -1) {
             // Setup the prompt message
-            var promptMsg = '';
+            let promptMsg = standardPromptMsg;
 
             // The current step is an error state
             if (unblockBotDetails.confirmNotifyROEReceivedStep === -1) {
                 promptMsg = retryPromptMsg;
             }
-            else {
-                promptMsg = standardPromptMsg;
-            }
 
             return await stepContext.prompt(TEXT_PROMPT, promptMsg);
-        }
-        else {
+        } else {
             return await stepContext.next(false);
         }
     }
@@ -98,8 +102,6 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const closeMsg = 'Ok, no problem!';
-
         switch (intent) {
         // Proceed
         case 'confirmChoicePositive':
@@ -112,7 +114,7 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmNotifyROEReceivedStep = false;
 
-            stepContext.context.sendActivity(closeMsg);
+            stepContext.context.sendActivity(this.locale.confirmNotifyROEReceivedStepClose);
 
             return await stepContext.endDialog(unblockBotDetails);
 

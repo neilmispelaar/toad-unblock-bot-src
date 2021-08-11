@@ -1,7 +1,7 @@
 const {
     TextPrompt,
     ComponentDialog,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -11,6 +11,9 @@ const CONFIRM_LOOK_INTO_STEP = 'CONFIRM_LOOK_INTO_STEP';
 const CONFIRM_LOOK_INTO_WATERFALL_STEP = 'CONFIRM_LOOK_INTO_STEP';
 
 const MAX_ERROR_COUNT = 3;
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class ConfirmLookIntoStep extends ComponentDialog {
     constructor() {
@@ -25,6 +28,7 @@ class ConfirmLookIntoStep extends ComponentDialog {
         ]));
 
         this.initialDialogId = CONFIRM_LOOK_INTO_WATERFALL_STEP;
+        this.locale = en;
 
         /*
         this.addDialog(new WaterfallDialog(CONFIRM_LOOK_INTO_WATERFALL_STEP,[
@@ -67,6 +71,9 @@ class ConfirmLookIntoStep extends ComponentDialog {
      * want to proceed
      */
     async initialStep(stepContext) {
+        if (stepContext.context.activity.locale === 'fr') {
+            this.locale = fr;
+        }
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
 
@@ -74,10 +81,10 @@ class ConfirmLookIntoStep extends ComponentDialog {
         console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails.errorCount.confirmLookIntoStep);
 
         // Set the text for the prompt
-        const standardMsg = 'I looked at your application and I can see there’s a block on your file. Do you want me to look into that?';
+        const standardMsg = this.locale.confirmLookIntoStep;
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you want me to take a look at your file?';
+        const retryMsg = this.locale.confirmLookIntoStepRetry;
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmLookIntoStep >= MAX_ERROR_COUNT) {
@@ -92,7 +99,7 @@ class ConfirmLookIntoStep extends ComponentDialog {
         // If it is false the user does not want to proceed
         if (unblockBotDetails.confirmLookIntoStep === null || unblockBotDetails.confirmLookIntoStep === -1) {
             // Setup the prompt message
-            var promptMsg = standardMsg;
+            let promptMsg = standardMsg;
 
             // The current step is an error state
             if (unblockBotDetails.confirmLookIntoStep === -1) {
@@ -100,8 +107,7 @@ class ConfirmLookIntoStep extends ComponentDialog {
             }
 
             return await stepContext.prompt(TEXT_PROMPT, promptMsg);
-        }
-        else {
+        } else {
             return await stepContext.next(false);
         }
     }
@@ -131,8 +137,6 @@ class ConfirmLookIntoStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const closeMsg = 'Ok, no problem. Let me know if you change your mind!';
-
         switch (intent) {
         // Proceed
         case 'confirmChoicePositive':
@@ -144,7 +148,7 @@ class ConfirmLookIntoStep extends ComponentDialog {
         case 'confirmChoiceNegative':
             console.log('INTENT: ', intent);
 
-            stepContext.context.sendActivity(closeMsg);
+            stepContext.context.sendActivity(this.locale.confirmLookIntoStepClose);
 
             unblockBotDetails.confirmLookIntoStep = false;
             return await stepContext.endDialog(unblockBotDetails);

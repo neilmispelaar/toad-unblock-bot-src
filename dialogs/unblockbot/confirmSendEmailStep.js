@@ -1,7 +1,7 @@
 const {
     TextPrompt,
     ComponentDialog,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -11,6 +11,9 @@ const CONFIRM_SEND_EMAIL_STEP = 'CONFIRM_SEND_EMAIL_STEP';
 const CONFIRM_SEND_EMAIL_STEP_WATERFALL_STEP = 'CONFIRM_SEND_EMAIL_STEP_WATERFALL_STEP';
 
 const MAX_ERROR_COUNT = 3;
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class ConfirmSendEmailStep extends ComponentDialog {
     constructor() {
@@ -25,6 +28,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
         ]));
 
         this.initialDialogId = CONFIRM_SEND_EMAIL_STEP_WATERFALL_STEP;
+        this.locale = en;
     }
 
     /**
@@ -39,6 +43,10 @@ class ConfirmSendEmailStep extends ComponentDialog {
      * want to proceed
      */
     async initialStep(stepContext) {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
+            this.locale = fr;
+        }
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
 
@@ -46,13 +54,13 @@ class ConfirmSendEmailStep extends ComponentDialog {
         console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails.errorCount.confirmSendEmailStep);
 
         // Set the text for the initial message
-        const standardMsg = 'So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Initech.';
+        const standardMsg = this.locale.confirmSendEmailStep;
 
         // Set the text for the prompt
-        const queryMsg = 'If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉';
+        const queryMsg = this.locale.confirmSendEmailStepQuery;
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you want me to take a look at your file?';
+        const retryMsg = this.locale.confirmSendEmailStepRetry;
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmSendEmailStep >= MAX_ERROR_COUNT) {
@@ -78,14 +86,12 @@ class ConfirmSendEmailStep extends ComponentDialog {
             // The current step is an error state
             if (unblockBotDetails.confirmSendEmailStep === -1) {
                 promptMsg = retryMsg;
-            }
-            else {
+            } else {
                 promptMsg = queryMsg;
             }
 
             return await stepContext.prompt(TEXT_PROMPT, promptMsg);
-        }
-        else {
+        } else {
             return await stepContext.next(false);
         }
     }
@@ -115,8 +121,6 @@ class ConfirmSendEmailStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const closeMsg = "Ok, no problem. I'll be here if you need me!";
-
         switch (intent) {
         // Proceed
         case 'confirmChoicePositive':
@@ -129,7 +133,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmSendEmailStep = false;
 
-            stepContext.context.sendActivity(closeMsg);
+            stepContext.context.sendActivity(this.locale.confirmSendEmailStepClose);
 
             return await stepContext.endDialog(unblockBotDetails);
 
