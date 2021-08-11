@@ -71,7 +71,8 @@ class ConfirmLookIntoStep extends ComponentDialog {
      * want to proceed
      */
     async initialStep(stepContext) {
-        if (stepContext.context.activity.locale === 'fr') {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
             this.locale = fr;
         }
         // Get the user details / state machine

@@ -67,7 +67,8 @@ class MainDialog extends ComponentDialog {
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      */
     async initialStep(stepContext) {
-        if (stepContext.context.activity.locale === 'fr') {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
             this.locale = fr;
         }
         const unblockBotDetails = new UnblockBotDetails();

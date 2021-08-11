@@ -48,14 +48,9 @@ class VirtualAssistantBot extends ActivityHandler {
         // converation with the bot
         this.onMembersAdded(async (context, next) => {
             const membersAdded = context.activity.membersAdded;
-
             const locale = context.activity.locale.toLocaleLowerCase();
             if (locale === 'fr-ca' || locale === 'fr-fr') {
-                context.activity.locale = 'fr';
                 this.locale = fr;
-            } else {
-                context.activity.locale = 'en';
-                this.locale = en;
             }
             for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
