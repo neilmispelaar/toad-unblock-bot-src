@@ -1,7 +1,7 @@
 const {
     TextPrompt,
     ComponentDialog,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -11,6 +11,9 @@ const GET_PREFFERED_METHOD_OF_CONTACT_STEP = 'GET_PREFFERED_METHOD_OF_CONTACT_ST
 const GET_PREFFERED_METHOD_OF_CONTACT_WATERFALL_STEP = 'GET_PREFFERED_METHOD_OF_CONTACT_WATERFALL_STEP';
 
 const MAX_ERROR_COUNT = 3;
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class GetPreferredMethodOfContactStep extends ComponentDialog {
     constructor() {
@@ -25,6 +28,7 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         ]));
 
         this.initialDialogId = GET_PREFFERED_METHOD_OF_CONTACT_WATERFALL_STEP;
+        this.locale = en;
     }
 
     /**
@@ -39,6 +43,10 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
      * want to proceed
      */
     async initialStep(stepContext) {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
+            this.locale = fr;
+        }
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
 
@@ -46,10 +54,10 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails);
 
         // Set the text for the prompt
-        const queryMsg = 'What\'s the best way to reach you? I can do email or text message (or both).';
+        const queryMsg = this.locale.getPreferredMethodOfContactStep;
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you prefer email or text or both?';
+        const retryMsg = this.locale.getPreferredMethodOfContactStepRetry;
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.getPreferredMethodOfContactStep >= MAX_ERROR_COUNT) {
@@ -69,14 +77,12 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
             // The current step is an error state
             if (unblockBotDetails.getPreferredMethodOfContactStep === -1) {
                 promptMsg = retryMsg;
-            }
-            else {
+            } else {
                 promptMsg = queryMsg;
             }
 
             return await stepContext.prompt(TEXT_PROMPT, promptMsg);
-        }
-        else {
+        } else {
             return await stepContext.next(false);
         }
     }
@@ -106,15 +112,13 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const emailMsg = 'Ok, we\'ll email you at mary@fakeaddress.com once we gotten your Record of Employment.';
-
         switch (intent) {
         // Proceed
         case 'confirmChoiceEmail':
             console.log('INTENT: ', intent);
             unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(emailMsg);
+            stepContext.context.sendActivity(this.locale.getPreferredMethodOfContactStepConfirm);
 
             return await stepContext.endDialog(unblockBotDetails);
         /*

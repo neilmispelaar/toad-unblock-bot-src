@@ -1,6 +1,6 @@
 const {
     ComponentDialog,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const { ConfirmLookIntoStep, CONFIRM_LOOK_INTO_STEP } = require('./confirmLookIntoStep');
@@ -11,6 +11,9 @@ const { GetPreferredMethodOfContactStep, GET_PREFFERED_METHOD_OF_CONTACT_STEP } 
 
 const UNBLOCK_BOT_DIALOG = 'UNBLOCK_BOT_DIALOG';
 const MAIN_UNBLOCK_BOT_WATERFALL_DIALOG = 'MAIN_UNBLOCK_BOT_WATERFALL_DIALOG';
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class UnblockBotDialog extends ComponentDialog {
     constructor() {
@@ -33,6 +36,7 @@ class UnblockBotDialog extends ComponentDialog {
         ]));
 
         this.initialDialogId = MAIN_UNBLOCK_BOT_WATERFALL_DIALOG;
+        this.locale = en;
     }
 
     /**
@@ -42,6 +46,10 @@ class UnblockBotDialog extends ComponentDialog {
      * will take care of edge cases
      */
     async confirmLookIntoStep(stepContext) {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr' || locale === 'fr') {
+            this.locale = fr;
+        }
         // Get the unblockbot details / state machine for the current user
         const unblockBotDetails = stepContext.options;
 
@@ -89,8 +97,7 @@ class UnblockBotDialog extends ComponentDialog {
         case null:
             if (unblockBotDetails.confirmLookIntoStep === true) {
                 return await stepContext.beginDialog(CONFIRM_SEND_EMAIL_STEP, unblockBotDetails);
-            }
-            else {
+            } else {
                 return await stepContext.endDialog(unblockBotDetails);
             }
 
@@ -197,8 +204,7 @@ class UnblockBotDialog extends ComponentDialog {
         case null:
             if (unblockBotDetails.confirmNotifyROEReceivedStep === true) {
                 return await stepContext.beginDialog(GET_PREFFERED_METHOD_OF_CONTACT_STEP, unblockBotDetails);
-            }
-            else {
+            } else {
                 return await stepContext.endDialog(unblockBotDetails);
             }
 
@@ -229,7 +235,7 @@ class UnblockBotDialog extends ComponentDialog {
         console.log('DEBUG DETAILS: ', unblockBotDetails);
 
         if (unblockBotDetails.masterError === true) {
-            await stepContext.context.sendActivity("Well this is awkward. Looks like we're having some issues today...");
+            await stepContext.context.sendActivity(this.locale.masterError);
         }
 
         return await stepContext.endDialog(unblockBotDetails);

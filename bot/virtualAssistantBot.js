@@ -1,6 +1,9 @@
-const { ActivityHandler, MessageFactory } = require('botbuilder');
+const { ActivityHandler } = require('botbuilder');
 // const { WaterfallDialog, WaterfallStepContext, ChoicePrompt, TextPrompt, DialogTurnStatus } = require('botbuilder-dialogs');
 const { MainDialog } = require('../dialogs/unblockbot/mainDialog');
+
+const { en } = require('../locale/en');
+const { fr } = require('../locale/fr');
 
 class VirtualAssistantBot extends ActivityHandler {
     constructor(conversationState, userState, dialogSet) {
@@ -14,6 +17,7 @@ class VirtualAssistantBot extends ActivityHandler {
         this.conversationState = conversationState;
         this.userState = userState;
         this.dialogSet = dialogSet;
+        this.locale = en;
 
         // Add the main dialog to the dialog set for the bot
         this.addDialogs();
@@ -44,16 +48,16 @@ class VirtualAssistantBot extends ActivityHandler {
         // converation with the bot
         this.onMembersAdded(async (context, next) => {
             const membersAdded = context.activity.membersAdded;
-            const welcomeText = 'Hi Mary, I’m your virtual concierge!';
-
+            const locale = context.activity.locale.toLocaleLowerCase();
+            if (locale === 'fr-ca' || locale === 'fr-fr') {
+                this.locale = fr;
+            }
             for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
                     // Send the welcome message
-                    await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
-
+                    await context.sendActivity(this.locale.hello);
                     // Create DialogContext for the current turn
                     const dc = await this.dialogSet.createContext(context);
-
                     // Begin the dialog
                     await dc.beginDialog('MAIN_DIALOG');
                 }
