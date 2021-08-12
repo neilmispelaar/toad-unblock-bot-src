@@ -18,7 +18,7 @@ class GetAndSendEmailStep extends ComponentDialog {
         super(GET_AND_SEND_EMAIL_STEP);
 
         // Add a text prompt to the dialog stack
-        this.addDialog(new TextPrompt(TEXT_PROMPT));
+        this.addDialog(new TextPrompt(TEXT_PROMPT, this.emailValidator));
 
         this.addDialog(new WaterfallDialog(GET_AND_SEND_EMAIL_WATERFALL_STEP, [
             this.initialStep.bind(this),
@@ -45,8 +45,8 @@ class GetAndSendEmailStep extends ComponentDialog {
         console.log('DEBUG UNBLOCKBOTDETAILS in GetAndSendEmailStep:', unblockBotDetails);
 
         // Set the text for the prompt
-        const standardPromptMsg = this.locale.getAndSendEmailStep;
-
+        // const standardPromptMsg = this.locale.getAndSendEmailStep;
+        const standardPromptMsg = { prompt: this.locale.getAndSendEmailStep, retryPrompt: this.locale.getAndSendEmailStepInvalidEmail };
         // Set the text for the retry prompt
         const retryPromptMsg = this.locale.getAndSendEmailStepRetry;
 
@@ -63,7 +63,7 @@ class GetAndSendEmailStep extends ComponentDialog {
         // If it is false the user does not want to proceed
         if (unblockBotDetails.getAndSendEmailStep === null || unblockBotDetails.getAndSendEmailStep === -1) {
             // Setup the prompt message
-            var promptMsg = '';
+            let promptMsg = '';
 
             // The current step is an error state
             if (unblockBotDetails.getAndSendEmailStep === -1) {
@@ -88,6 +88,7 @@ class GetAndSendEmailStep extends ComponentDialog {
 
         // Result has come through
         if (stepContext.result) {
+            unblockBotDetails.getAndSendEmailStep = true;
             await stepContext.context.sendActivity(this.locale.getAndSendEmailStepConfirm);
             return await stepContext.endDialog(unblockBotDetails);
         } else {
@@ -97,6 +98,16 @@ class GetAndSendEmailStep extends ComponentDialog {
 
             return await stepContext.replaceDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
         }
+    }
+
+    async emailValidator(promptContext) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        // Either we increment manually or use the below if statement.
+        // unblockBotDetails.errorCount.getAndSendEmailStep++;
+        if (promptContext.attemptCount >= 3) {
+            // We can use this if statement to continue the dialog.
+        }
+        return re.test(String(promptContext.recognized.value).toLowerCase());
     }
 }
 

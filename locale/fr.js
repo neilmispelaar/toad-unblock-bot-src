@@ -11,6 +11,7 @@ const fr = {
     confirmSendEmailStepRetry: "Désolé, voulez-vous que je jette un coup d'oeil à votre dossier ?",
     confirmSendEmailStepClose: 'Ok, pas de problème. Je serai là si tu as besoin de moi !',
     getAndSendEmailStep: "Ok, à quelle adresse e-mail dois-je l'envoyer ?",
+    getAndSendEmailStepInvalidEmail: "Format d'e-mail non valide, veuillez réessayer.",
     getAndSendEmailStepRetry: "Désolé, voulez-vous que j'envoie un e-mail à votre ancien employeur ?",
     getAndSendEmailStepConfirm: 'Ok, e-mail envoyé !',
     getPreferredMethodOfContactStep: 'Quel est le meilleur moyen de vous joindre ? Je peux envoyer un courriel ou un message texte (ou les deux).',

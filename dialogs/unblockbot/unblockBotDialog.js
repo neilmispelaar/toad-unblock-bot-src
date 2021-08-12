@@ -95,7 +95,7 @@ class UnblockBotDialog extends ComponentDialog {
         // The confirmLookIntoStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
-            if (unblockBotDetails.confirmLookIntoStep === true) {
+            if (unblockBotDetails.confirmLookIntoStep) {
                 return await stepContext.beginDialog(CONFIRM_SEND_EMAIL_STEP, unblockBotDetails);
             } else {
                 return await stepContext.endDialog(unblockBotDetails);
@@ -126,13 +126,17 @@ class UnblockBotDialog extends ComponentDialog {
         const unblockBotDetails = stepContext.result;
 
         // DEBUG
-        // console.log('DEBUG: getAndSendEmailStep:', unblockBotDetails, stepContext.result);
+        console.log('DEBUG: getAndSendEmailStep:', unblockBotDetails, stepContext.result);
 
         switch (unblockBotDetails.getAndSendEmailStep) {
         // The confirmLookIntoStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
-            return await stepContext.beginDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
+            if (unblockBotDetails.confirmLookIntoStep && unblockBotDetails.confirmSendEmailStep) {
+                return await stepContext.beginDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
+            } else {
+                return await stepContext.endDialog(unblockBotDetails);
+            }
 
         // The confirmLookIntoStep flag in the state machine is set to true
         // so we are sending the user to next step
@@ -161,14 +165,17 @@ class UnblockBotDialog extends ComponentDialog {
         const unblockBotDetails = stepContext.result;
 
         // DEBUG
-        // console.log('DEBUG: getAndSendEmailStep:', unblockBotDetails, stepContext.result);
+        console.log('DEBUG: confirmNotifyROEReceivedStep:', unblockBotDetails, stepContext.result);
 
         switch (unblockBotDetails.confirmNotifyROEReceivedStep) {
         // The confirmNotifyROEReceivedStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
-            return await stepContext.beginDialog(CONFIRM_NOTIFY_ROE_RECEIVED_STEP, unblockBotDetails);
-
+            if (unblockBotDetails.confirmLookIntoStep && unblockBotDetails.confirmSendEmailStep && unblockBotDetails.getAndSendEmailStep) {
+                return await stepContext.beginDialog(CONFIRM_NOTIFY_ROE_RECEIVED_STEP, unblockBotDetails);
+            } else {
+                return await stepContext.endDialog(unblockBotDetails);
+            }
         // The confirmNotifyROEReceivedStep flag in the state machine is set to true
         // so we are sending the user to next step
         case true:
@@ -196,13 +203,13 @@ class UnblockBotDialog extends ComponentDialog {
         const unblockBotDetails = stepContext.result;
 
         // DEBUG
-        // console.log('DEBUG: getAndSendEmailStep:', unblockBotDetails, stepContext.result);
+        console.log('DEBUG: getPreferredMethodOfContactStep:', unblockBotDetails, stepContext.result);
 
         switch (unblockBotDetails.getPreferredMethodOfContactStep) {
         // The GetPreferredMethodOfContactStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
-            if (unblockBotDetails.confirmNotifyROEReceivedStep === true) {
+            if (unblockBotDetails.confirmLookIntoStep && unblockBotDetails.confirmSendEmailStep && unblockBotDetails.getAndSendEmailStep && unblockBotDetails.confirmNotifyROEReceivedStep) {
                 return await stepContext.beginDialog(GET_PREFFERED_METHOD_OF_CONTACT_STEP, unblockBotDetails);
             } else {
                 return await stepContext.endDialog(unblockBotDetails);
