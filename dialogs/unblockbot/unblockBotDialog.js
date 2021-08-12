@@ -125,6 +125,7 @@ class UnblockBotDialog extends ComponentDialog {
         // The confirmLookIntoStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
+            // ADD CHECKS TO SEE IF THE STATE FOR THE FIRST TWO STEPS IS TRUE 
             return await stepContext.beginDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
 
         // The confirmLookIntoStep flag in the state machine is set to true
@@ -160,6 +161,8 @@ class UnblockBotDialog extends ComponentDialog {
         // The confirmNotifyROEReceivedStep flag in the state machine isn't set
         // so we are sending the user to that step
         case null:
+            // ADD CHECKS TO SEE IF THE FIRST THREE STEPS ARE TRUE 
+            // IF ANY STEPS WERE FALSE OR ANYTHING ELSE THAN JUST END DIALOG 
             return await stepContext.beginDialog(CONFIRM_NOTIFY_ROE_RECEIVED_STEP, unblockBotDetails);
 
         // The confirmNotifyROEReceivedStep flag in the state machine is set to true
