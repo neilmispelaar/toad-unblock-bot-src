@@ -14,12 +14,21 @@ class VirtualAssistantBot extends ActivityHandler {
         this.conversationState = conversationState;
         this.userState = userState;
         this.dialogSet = dialogSet;
-
+        
         // Add the main dialog to the dialog set for the bot
         this.addDialogs();
 
+        this.onEvent(async (context, next) => {
+            if (context.activity.name === 'directlinejs/join') {
+              await context.sendActivity('Back Channel Welcome Message!');
+            }
+          
+            await next();
+          });
+
         // See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
         this.onMessage(async (context, next) => {
+            
             // Create DialogContext for the current turn
             const dc = await this.dialogSet.createContext(context);
 
@@ -30,26 +39,52 @@ class VirtualAssistantBot extends ActivityHandler {
             // If we want to rerun the dialog after it has finished we would uncomment the following
             // for now - once the main dialog has run the bot just ignores all incoming messages
             // TODO: is that really the behaviour we want though?
-            /*
-            if (result.status == DialogTurnStatus.empty && dc.context.activity.type == ActivityTypes.Message) {
-                await dc.beginDialog('help');
-            }
-            */
+            
+            // if (result.status == DialogTurnStatus.empty && dc.context.activity.type == ActivityTypes.Message) {
+            //    await dc.beginDialog('help');
+            // }
+            
 
             // By calling next() you ensure that the next BotHandler is run.
             await next();
+            
         });
-
-        // This function runs when a new member is added to the
-        // converation with the bot
+        
+        /**
+         * https://github.com/microsoft/BotFramework-WebChat/blob/master/docs/WELCOME_MESSAGE.md#tokens-user-ids-and-iframes
+         *  
+         */  
         this.onMembersAdded(async (context, next) => {
+            const { channelId, membersAdded } = context.activity;
+            const welcomeMsg = 'Hi Mary, I’m your virtual concierge!';
+          
+            if (channelId !== 'directline' && channelId !== 'webchat') {
+              for (let member of membersAdded) {
+                if (member.id !== context.activity.recipient.id) {
+                  await context.sendActivity(welcomeMsg);
+
+                  // Create DialogContext for the current turn
+                  const dc = await this.dialogSet.createContext(context);
+
+                  // Begin the dialog
+                  await dc.beginDialog('MAIN_DIALOG');
+                }
+              }
+            }
+          
+            await next();
+          });
+
+        /*
+        this.onMembersAdded(async (context, next) => {
+            
             const membersAdded = context.activity.membersAdded;
             const welcomeText = 'Hi Mary, I’m your virtual concierge!';
 
             for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
                     // Send the welcome message
-                    await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
+                    await context.sendActivity(welcomeText);
 
                     // Create DialogContext for the current turn
                     const dc = await this.dialogSet.createContext(context);
@@ -60,7 +95,10 @@ class VirtualAssistantBot extends ActivityHandler {
             }
             // By calling next() you ensure that the next BotHandler is run.
             await next();
+            
         });
+        */
+    
     }
 
     addDialogs() {
