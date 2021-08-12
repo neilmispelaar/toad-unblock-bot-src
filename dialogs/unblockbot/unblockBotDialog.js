@@ -24,6 +24,7 @@ class UnblockBotDialog extends ComponentDialog {
         this.addDialog(new GetPreferredMethodOfContactStep());
 
         this.addDialog(new WaterfallDialog(MAIN_UNBLOCK_BOT_WATERFALL_DIALOG, [
+            this.welcomeStep.bind(this),
             this.confirmLookIntoStep.bind(this),
             this.confirmSendEmailStep.bind(this),
             this.getAndSendEmailStep.bind(this),
@@ -35,15 +36,35 @@ class UnblockBotDialog extends ComponentDialog {
         this.initialDialogId = MAIN_UNBLOCK_BOT_WATERFALL_DIALOG;
     }
 
+
     /**
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      * Most of the time this will just kick off the CONFIRM_LOOK_INTO_STEP dialog -
      * But in the off chance that the bot has already run through the switch statement
      * will take care of edge cases
      */
-    async confirmLookIntoStep(stepContext) {
+    async welcomeStep(stepContext) {
+
         // Get the unblockbot details / state machine for the current user
         const unblockBotDetails = stepContext.options;
+
+        const welcomeMsg = 'Hi Mary, I’m your virtual concierge!';
+
+        await stepContext.context.sendActivity(welcomeMsg);
+
+        return await stepContext.next(unblockBotDetails);
+
+    }
+
+    /*
+     * Initial step in the waterfall. This will kick of the unblockbot dialog
+     * Most of the time this will just kick off the CONFIRM_LOOK_INTO_STEP dialog -
+     * But in the off chance that the bot has already run through the switch statement
+     * will take care of edge cases
+     */
+    async confirmLookIntoStep(stepContext) {
+        // Get the state machine from the last step
+        const unblockBotDetails = stepContext.result;
 
         // DEBUG
         console.log('DEBUG: unblockBotDetails:', unblockBotDetails);

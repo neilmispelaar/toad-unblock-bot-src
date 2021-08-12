@@ -56,13 +56,11 @@ class VirtualAssistantBot extends ActivityHandler {
          */  
         this.onMembersAdded(async (context, next) => {
             const { channelId, membersAdded } = context.activity;
-            const welcomeMsg = 'Hi Mary, I’m your virtual concierge!';
-          
+            
             if (channelId !== 'directline' && channelId !== 'webchat') {
               for (let member of membersAdded) {
                 if (member.id !== context.activity.recipient.id) {
-                  await context.sendActivity(welcomeMsg);
-
+                  
                   // Create DialogContext for the current turn
                   const dc = await this.dialogSet.createContext(context);
 
