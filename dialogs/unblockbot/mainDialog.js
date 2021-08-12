@@ -7,12 +7,12 @@ const {
     ChoicePrompt,
     DialogSet,
     DialogTurnStatus,
-    WaterfallDialog,
+    WaterfallDialog
 } = require('botbuilder-dialogs');
 
 const {
     UnblockBotDialog,
-    UNBLOCK_BOT_DIALOG,
+    UNBLOCK_BOT_DIALOG
 } = require('./unblockBotDialog');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -24,6 +24,9 @@ const MAIN_DIALOG = 'MAIN_DIALOG';
 
 // The String ID of the waterfall dialog that exists in the main dialog
 const MAIN_WATERFALL_DIALOG = 'MAIN_WATERFALL_DIALOG';
+
+const { en } = require('../../locale/en');
+const { fr } = require('../../locale/fr');
 
 class MainDialog extends ComponentDialog {
     constructor() {
@@ -40,6 +43,7 @@ class MainDialog extends ComponentDialog {
         ]));
 
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
+        this.locale = en;
     }
 
     /**
@@ -63,6 +67,10 @@ class MainDialog extends ComponentDialog {
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      */
     async initialStep(stepContext) {
+        const locale = stepContext.context.activity.locale.toLocaleLowerCase();
+        if (locale === 'fr-ca' || locale === 'fr-fr') {
+            this.locale = fr;
+        }
         const unblockBotDetails = new UnblockBotDetails();
         return await stepContext.beginDialog(UNBLOCK_BOT_DIALOG, unblockBotDetails);
     }
@@ -73,7 +81,7 @@ class MainDialog extends ComponentDialog {
     async rateStep(stepContext) {
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await stepContext.prompt(CHOICE_PROMPT, {
-            prompt: 'Before you go, could I ask you to rate the service you received today?',
+            prompt: this.locale.rateStep,
             choices: ChoiceFactory.toChoices(['😡', '🙁', '😐', '🙂', '😄'])
         });
     }
@@ -82,7 +90,7 @@ class MainDialog extends ComponentDialog {
      * This is the final step in the main waterfall dialog.
      */
     async finalStep(stepContext) {
-        await stepContext.context.sendActivity('Ok, have a great day!');
+        await stepContext.context.sendActivity(this.locale.finalStep);
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
         return await stepContext.endDialog();
     }
