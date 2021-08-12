@@ -14,17 +14,53 @@ class VirtualAssistantBot extends ActivityHandler {
         this.conversationState = conversationState;
         this.userState = userState;
         this.dialogSet = dialogSet;
+        this.dialog = new MainDialog();
+        this.dialogState = this.conversationState.createProperty('DialogState');
         
         // Add the main dialog to the dialog set for the bot
-        this.addDialogs();
+        // this.addDialogs();
 
         this.onEvent(async (context, next) => {
-            if (context.activity.name === 'directlinejs/join') {
-              await context.sendActivity('Back Channel Welcome Message!');
+            if (context.activity.name === 'requestWelcomeDialog') {
+                console.log('Hello');
+                await context.sendActivity('Back Channel Welcome Message!');
             }
           
             await next();
           });
+        
+
+        this.onMembersAdded(async (context, next) => {
+            console.log('Running dialog with Message Activity.');
+
+            // Send greeting and then activate dialog
+            // await context.sendActivity(`Hi Mary, I’m your virtual concierge!`);
+
+            // Run the Dialog with the new message Activity.
+            await this.dialog.run(context, this.dialogState);
+
+            // By calling next() you ensure that the next BotHandler is run.
+            await next();
+        });
+
+        this.onMessage(async (context, next) => {
+            
+            console.log('Running dialog with Message Activity.');
+
+            // Run the Dialog with the new message Activity.
+            await this.dialog.run(context, this.dialogState);
+
+            // By calling next() you ensure that the next BotHandler is run.
+            await next();
+           
+        });
+
+
+
+
+
+
+        /*
 
         // See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
         this.onMessage(async (context, next) => {
@@ -49,11 +85,12 @@ class VirtualAssistantBot extends ActivityHandler {
             await next();
             
         });
+        */
         
         /**
          * https://github.com/microsoft/BotFramework-WebChat/blob/master/docs/WELCOME_MESSAGE.md#tokens-user-ids-and-iframes
          *  
-         */  
+         *
         this.onMembersAdded(async (context, next) => {
             const { channelId, membersAdded } = context.activity;
             
@@ -72,6 +109,8 @@ class VirtualAssistantBot extends ActivityHandler {
           
             await next();
           });
+
+        */
 
         /*
         this.onMembersAdded(async (context, next) => {

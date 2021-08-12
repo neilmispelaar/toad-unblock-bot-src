@@ -52,12 +52,19 @@ class ConfirmSendEmailStep extends ComponentDialog {
         const queryMsg = 'If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉';
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you want me to take a look at your file?';
+        const retryMsg = 'Sorry, do you want me to send an email to your former employer?';
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmSendEmailStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
             unblockBotDetails.masterError = true;
+            
+            // Set master error message to send
+            const errorMsg = 'Sorry Mary, I’m not able to help you.'
+
+            // Send master error message
+            await stepContext.context.sendActivity(errorMsg);
+
             // End the dialog and pass the updated details state machine
             return await stepContext.endDialog(unblockBotDetails);
         }
@@ -115,6 +122,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
+        // This message is sent if the user selects that they don't want to continue
         const closeMsg = "Ok, no problem. I'll be here if you need me!";
 
         switch (intent) {

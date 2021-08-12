@@ -83,6 +83,13 @@ class ConfirmLookIntoStep extends ComponentDialog {
         if (unblockBotDetails.errorCount.confirmLookIntoStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
             unblockBotDetails.masterError = true;
+
+            // Set master error message to send
+            const errorMsg = 'Sorry Mary, I’m not able to help you.'
+
+            // Send master error message
+            await stepContext.context.sendActivity(errorMsg);
+
             // End the dialog and pass the updated details state machine
             return await stepContext.endDialog(unblockBotDetails);
         }
@@ -114,6 +121,8 @@ class ConfirmLookIntoStep extends ComponentDialog {
     async finalStep(stepContext) {
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
+
+        // TODO: Check language and then change LUIZ appID
 
         // LUIZ Recogniser processing
         const recognizer = new LuisRecognizer({
