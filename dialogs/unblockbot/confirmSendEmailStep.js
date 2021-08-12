@@ -2,6 +2,7 @@ const {
     TextPrompt,
     ComponentDialog,
     WaterfallDialog,
+    ChoiceFactory,
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -90,7 +91,16 @@ class ConfirmSendEmailStep extends ComponentDialog {
                 promptMsg = queryMsg;
             }
 
-            return await stepContext.prompt(TEXT_PROMPT, promptMsg);
+            //const promptOptions = ['Yes, email my former employer', 'No, don\'t email my former employer'];
+
+            const promptOptions = ['Yes, send email', 'No, don\'t send email'];
+
+            const promptDetails = {
+                prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
+            };
+
+            return await stepContext.prompt(TEXT_PROMPT, promptDetails);
+
         }
         else {
             return await stepContext.next(false);
@@ -128,12 +138,14 @@ class ConfirmSendEmailStep extends ComponentDialog {
         switch (intent) {
         // Proceed
         case 'confirmChoicePositive':
+        case 'promptConfirmSendEmail':
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmSendEmailStep = true;
             return await stepContext.endDialog(unblockBotDetails);
 
             // Don't Proceed
         case 'confirmChoiceNegative':
+        case 'promptConfirmDontSendEmail':
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmSendEmailStep = false;
 

@@ -2,6 +2,7 @@ const {
     TextPrompt,
     ComponentDialog,
     WaterfallDialog,
+    ChoiceFactory,
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -73,8 +74,13 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
             else {
                 promptMsg = queryMsg;
             }
+            const promptOptions = ['Email', 'Text message', 'Both'];
 
-            return await stepContext.prompt(TEXT_PROMPT, promptMsg);
+            const promptDetails = {
+                prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
+            };
+
+            return await stepContext.prompt(TEXT_PROMPT, promptDetails);
         }
         else {
             return await stepContext.next(false);
@@ -103,31 +109,43 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         // Call prompts recognizer
         const recognizerResult = await recognizer.recognize(stepContext.context);
 
+        // Setup the possible messages that could go out
+        const sendEmailMsg = 'Ok, we\'ll email you at mary@fakeaddress.com once we gotten your Record of Employment.';
+        const sendTextMsg = 'Ok, I\'ll text you at 123-456-7890 once we\'ve gotten your Record of Employment.';
+        const sendBothMsg = 'Ok, I\'ll email you at mary@fakeaddress.com, and text you at 123-456-7890 once we\'ve gotten your Record of Employment.';
+
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const emailMsg = 'Ok, we\'ll email you at mary@fakeaddress.com once we gotten your Record of Employment.';
-
         switch (intent) {
-        // Proceed
+        // Proceed with Email
+        case 'promptConfirmSendEmail':
         case 'confirmChoiceEmail':
             console.log('INTENT: ', intent);
             unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(emailMsg);
+            stepContext.context.sendActivity(sendEmailMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
-        /*
-        // TODO: ADD TEXT / PHONE OPTION
-        // Don't Proceed
-        case 'confirmChoiceNegative':
+        
+        // Proceed with Text Message
+        case 'confirmChoiceTextMessage':
             console.log('INTENT: ', intent);
-            unblockBotDetails.confirmSendEmailStep = false;
+            unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(closeMsg);
+            stepContext.context.sendActivity(sendTextMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
-        */
+        
+        // Proceed with Both Messages
+        case 'confirmChoiceTextMessage':
+            console.log('INTENT: ', intent);
+            unblockBotDetails.getPreferredMethodOfContactStep = true;
+
+            stepContext.context.sendActivity(sendBothMsg);
+
+            return await stepContext.endDialog(unblockBotDetails);
+       
         // Could not understand / None intent
         default: {
             // Catch all

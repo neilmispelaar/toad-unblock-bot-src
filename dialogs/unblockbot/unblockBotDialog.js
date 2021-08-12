@@ -102,32 +102,39 @@ class UnblockBotDialog extends ComponentDialog {
         const unblockBotDetails = stepContext.result;
 
         // DEBUG
-        console.log('DEBUG: confirmSendEmailStep:', unblockBotDetails, stepContext.result);
+        console.log('DEBUG: confirmSendEmailStep:', unblockBotDetails);
 
-        switch (unblockBotDetails.confirmSendEmailStep) {
-        // The confirmLookIntoStep flag in the state machine isn't set
-        // so we are sending the user to that step
-        case null:
-            if (unblockBotDetails.confirmLookIntoStep === true) {
-                return await stepContext.beginDialog(CONFIRM_SEND_EMAIL_STEP, unblockBotDetails);
-            }
-            else {
+        // Check if a master error occured and then end the dialog 
+        if (unblockBotDetails.masterError === true) { 
+            return await stepContext.endDialog(unblockBotDetails);
+        }
+        else { 
+            // If no master error occured continue on
+            switch (unblockBotDetails.confirmSendEmailStep) {
+            // The confirmLookIntoStep flag in the state machine isn't set
+            // so we are sending the user to that step
+            case null:
+                if (unblockBotDetails.confirmLookIntoStep) {
+                    return await stepContext.beginDialog(CONFIRM_SEND_EMAIL_STEP, unblockBotDetails);
+                }
+                else {
+                    return await stepContext.endDialog(unblockBotDetails);
+                }
+    
+            // The confirmLookIntoStep flag in the state machine is set to true
+            // so we are sending the user to next step
+            case true:
+                return await stepContext.next();
+    
+            // The confirmLookIntoStep flag in the state machine is set to false
+            // so we are sending to the end because they don't want to continue
+            case false:
+                return await stepContext.endDialog(unblockBotDetails);
+    
+            // Default catch all but we should never get here
+            default:
                 return await stepContext.endDialog(unblockBotDetails);
             }
-
-        // The confirmLookIntoStep flag in the state machine is set to true
-        // so we are sending the user to next step
-        case true:
-            return await stepContext.next();
-
-        // The confirmLookIntoStep flag in the state machine is set to false
-        // so we are sending to the end because they don't want to continue
-        case false:
-            return await stepContext.endDialog(unblockBotDetails);
-
-        // Default catch all but we should never get here
-        default:
-            return await stepContext.endDialog(unblockBotDetails);
         }
     }
 
@@ -142,28 +149,39 @@ class UnblockBotDialog extends ComponentDialog {
         // DEBUG
         // console.log('DEBUG: getAndSendEmailStep:', unblockBotDetails, stepContext.result);
 
-        switch (unblockBotDetails.getAndSendEmailStep) {
-        // The confirmLookIntoStep flag in the state machine isn't set
-        // so we are sending the user to that step
-        case null:
-            // ADD CHECKS TO SEE IF THE STATE FOR THE FIRST TWO STEPS IS TRUE 
-            return await stepContext.beginDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
-
-        // The confirmLookIntoStep flag in the state machine is set to true
-        // so we are sending the user to next step
-        case true:
-            console.log('DEBUG', unblockBotDetails);
-            return await stepContext.next(unblockBotDetails);
-
-        // The confirmLookIntoStep flag in the state machine is set to false
-        // so we are sending to the end because they don't want to continue
-        case false:
-            // code block
+        // Check if a master error occured and then end the dialog 
+        if (unblockBotDetails.masterError === true) { 
             return await stepContext.endDialog(unblockBotDetails);
+        }
+        else { 
+            // If no master error occured continue on
+            switch (unblockBotDetails.getAndSendEmailStep) {
+            // The confirmLookIntoStep flag in the state machine isn't set
+            // so we are sending the user to that step
+            case null:
+                if (unblockBotDetails.confirmLookIntoStep && unblockBotDetails.confirmSendEmailStep) {
+                    return await stepContext.beginDialog(GET_AND_SEND_EMAIL_STEP, unblockBotDetails);
+                } 
+                else {
+                    return await stepContext.endDialog(unblockBotDetails);
+                }
 
-        // Default catch all but we should never get here
-        default:
-            return await stepContext.endDialog(unblockBotDetails);
+            // The confirmLookIntoStep flag in the state machine is set to true
+            // so we are sending the user to next step
+            case true:
+                console.log('DEBUG', unblockBotDetails);
+                return await stepContext.next(unblockBotDetails);
+
+            // The confirmLookIntoStep flag in the state machine is set to false
+            // so we are sending to the end because they don't want to continue
+            case false:
+                // code block
+                return await stepContext.endDialog(unblockBotDetails);
+
+            // Default catch all but we should never get here
+            default:
+                return await stepContext.endDialog(unblockBotDetails);
+            }
         }
     }
 

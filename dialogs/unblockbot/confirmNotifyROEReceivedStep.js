@@ -2,6 +2,7 @@ const {
     TextPrompt,
     ComponentDialog,
     WaterfallDialog,
+    ChoiceFactory,
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -48,6 +49,13 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         if (unblockBotDetails.errorCount.confirmNotifyROEReceivedStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
             unblockBotDetails.masterError = true;
+
+             // Set master error message to send
+             const errorMsg = 'Sorry Mary, I’m not able to help you.'
+
+             // Send master error message
+             await stepContext.context.sendActivity(errorMsg);
+
             // End the dialog and pass the updated details state machine
             return await stepContext.endDialog(unblockBotDetails);
         }
@@ -66,8 +74,14 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
             else {
                 promptMsg = standardPromptMsg;
             }
+            
+            const promptOptions = ['Yes, notify me', 'No, don\'t notify me'];
 
-            return await stepContext.prompt(TEXT_PROMPT, promptMsg);
+            const promptDetails = {
+                prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
+            };
+
+            return await stepContext.prompt(TEXT_PROMPT, promptDetails);
         }
         else {
             return await stepContext.next(false);
@@ -102,12 +116,14 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
 
         switch (intent) {
         // Proceed
+        case 'promptConfirmNotifyMe':
         case 'confirmChoicePositive':
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmNotifyROEReceivedStep = true;
             return await stepContext.endDialog(unblockBotDetails);
 
         // Don't Proceed
+        case 'promptConfirmDontNotifyMe':
         case 'confirmChoiceNegative':
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmNotifyROEReceivedStep = false;

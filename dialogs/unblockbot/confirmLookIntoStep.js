@@ -2,6 +2,7 @@ const {
     TextPrompt,
     ComponentDialog,
     WaterfallDialog,
+    ChoiceFactory,
 } = require('botbuilder-dialogs');
 
 const { LuisRecognizer } = require('botbuilder-ai');
@@ -106,7 +107,13 @@ class ConfirmLookIntoStep extends ComponentDialog {
                 promptMsg = retryMsg;
             }
 
-            return await stepContext.prompt(TEXT_PROMPT, promptMsg);
+            const promptOptions = ['Yes please!', 'No thanks'];
+
+            const promptDetails = {
+                prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
+            };
+
+            return await stepContext.prompt(TEXT_PROMPT, promptDetails);
         }
         else {
             return await stepContext.next(false);
