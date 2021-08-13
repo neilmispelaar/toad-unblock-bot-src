@@ -4,6 +4,9 @@ const {
     WaterfallDialog,
 } = require('botbuilder-dialogs');
 
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
 const TEXT_PROMPT = 'TEXT_PROMPT';
 const GET_AND_SEND_EMAIL_STEP = 'GET_AND_SEND_EMAIL_STEP';
 const GET_AND_SEND_EMAIL_WATERFALL_STEP = 'GET_AND_SEND_EMAIL_WATERFALL_STEP';
@@ -34,13 +37,13 @@ class GetAndSendEmailStep extends ComponentDialog {
         const unblockBotDetails = stepContext.options;
 
         // DEBUG
-        console.log('DEBUG UNBLOCKBOTDETAILS in GetAndSendEmailStep:', unblockBotDetails);
+        // console.log('DEBUG UNBLOCKBOTDETAILS in GetAndSendEmailStep:', unblockBotDetails);
 
-        // Set the text for the prompt
-        const standardPromptMsg = 'Ok, what email address should I send it to?';
+         // Set the text for the prompt
+         const standardMsg = i18n.__('getAndSendEmailStepStandardMsg');
 
-        // Set the text for the retry prompt
-        const retryPromptMsg = 'Sorry, do you want me to send an email to your former employer?';
+         // Set the text for the retry prompt
+         const retryMsg = i18n.__('getAndSendEmailStepRetryMsg');
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.getAndSendEmailStep >= MAX_ERROR_COUNT) {
@@ -82,9 +85,10 @@ class GetAndSendEmailStep extends ComponentDialog {
 
         // Result has come through
         if (stepContext.result) {
-            const confirmMsg = 'Ok, email sent!';
+            const confirmMsg = i18n.__('getAndSendEmailStepConfirmMsg');
+
             await stepContext.context.sendActivity(confirmMsg);
-            
+
             return await stepContext.endDialog(unblockBotDetails);
         }
         // No result provided

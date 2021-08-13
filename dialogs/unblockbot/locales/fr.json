@@ -1,13 +1,46 @@
 {
-    "unBlockBotDialogWelcomeMsg": "(FR) Hi Mary, I’m your virtual concierge!",
-    "unblockBotDialogMasterErrorMsg": "(FR) Well this is awkward. Looks like we're having some issues today...",
-
+	"unBlockBotDialogWelcomeMsg": "(FR) Hi Mary, I’m your virtual concierge!",
+	"unblockBotDialogMasterErrorMsg": "(FR) Well this is awkward. Looks like we're having some issues today...",
+	
     "mainDialogFeedbackMsg": "(FR) Before you go, could I ask you to rate the service you received today?",
-    "mainDialogGreatDayMsg": "(FR) Ok, have a great day!",
-
+	"mainDialogGreatDayMsg": "(FR) Ok, have a great day!",
+	
     "confirmLookIntoStepStandardMsg": "(FR) I looked at your application and I can see there’s a block on your file. Do you want me to look into that?",
-    "confirmLookIntoStepRetryMsg": "(FR) Sorry, do you want me to take a look at your file?",
-    "confirmLookIntoStepErrorMsg": "(FR  Sorry Mary, I’m not able to help you.",
-    "confirmLookIntoStepStandardPromptOptions": ["FRYes please!", "FRNo thanks"],
-    "confirmLookIntoStepCloseMsg": "(FR) Ok, no problem. Let me know if you change your mind!"
+	"confirmLookIntoStepRetryMsg": "(FR) Sorry, do you want me to take a look at your file?",
+	"confirmLookIntoStepErrorMsg": "(FR  Sorry Mary, I’m not able to help you.",
+	"confirmLookIntoStepStandardPromptOptions": [
+		"FRYes please!",
+		"FRNo thanks"
+	],
+	"confirmLookIntoStepCloseMsg": "(FR) Ok, no problem. Let me know if you change your mind!",
+
+	"confirmSendEmailStepStandardMsg": "(FR) So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Initech.",
+    "confirmSendEmailStepRetryMsg": "(FR) If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉",
+    "confirmSendEmailStepQueryMsg": "(FR) Sorry, do you want me to send an email to your former employer?",
+    "confirmSendEmailStepErrorMsg": "(FR) Sorry Mary, I’m not able to help you.",
+    "confirmSendEmailStepStandardPromptOptions": [
+        "FR Yes, send email",
+        "FR No, don't send email"
+    ],
+    "confirmSendEmailStepCloseMsg": "(FR) Ok, no problem. I'll be here if you need me!",
+
+    "getAndSendEmailStepStandardMsg": "(FR) Ok, what email address should I send it to?",
+    "getAndSendEmailStepRetryMsg": "(FR) Sorry, do you want me to send an email to your former employer?",
+    "getAndSendEmailStepConfirmMsg": "(FR) Ok, email sent!",
+
+    "confirmNotifyROEReceivedStepStandardMsg": "(FR) Do you want me to notify you when we’ve received the Record of Employment?",
+    "confirmNotifyROEReceivedStepRetryMsg": "(FR) Sorry, I didn't quite get that. Do you want me to notify you when we’ve received the Record of Employment?",
+    "confirmNotifyROEReceivedStepErrorMsg": "(FR) Sorry Mary, I’m not able to help you.",
+    "confirmNotifyROEReceivedStepStandardPromptOptions": [
+        "FRYes, notify me",
+        "FRNo, don't notify me"
+    ],
+    "confirmNotifyROEReceivedStepCloseMsg": "FROk, no problem!",
+
+    "getPreferredMethodOfContactStepStandardMsg": "FRWhat's the best way to reach you? I can do email or text message (or both).",
+    "getPreferredMethodOfContactStepRetryMsg": "FRSorry, do you prefer email or text or both?",
+    "getPreferredMethodOfContactStepSendEmailMsg": "FROk, we'll email you at mary@fakeaddress.com once we gotten your Record of Employment.",
+    "getPreferredMethodOfContactStepSendTextMsg": "FROk, I'll text you at 123-456-7890 once we've gotten your Record of Employment.",
+    "getPreferredMethodOfContactStepSendBothMsg": "FROk, I'll email you at mary@fakeaddress.com, and text you at 123-456-7890 once we've gotten your Record of Employment."
+
 }

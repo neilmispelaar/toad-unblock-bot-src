@@ -7,6 +7,9 @@ const {
 
 const { LuisRecognizer } = require('botbuilder-ai');
 
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
 const TEXT_PROMPT = 'TEXT_PROMPT';
 const CONFIRM_SEND_EMAIL_STEP = 'CONFIRM_SEND_EMAIL_STEP';
 const CONFIRM_SEND_EMAIL_STEP_WATERFALL_STEP = 'CONFIRM_SEND_EMAIL_STEP_WATERFALL_STEP';
@@ -44,26 +47,29 @@ class ConfirmSendEmailStep extends ComponentDialog {
         const unblockBotDetails = stepContext.options;
 
         // DEBUG
-        console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails.errorCount.confirmSendEmailStep);
+        // console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails.errorCount.confirmSendEmailStep);
 
-        // Set the text for the initial message
-        const standardMsg = 'So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Initech.';
+        // This sets the i18n local in a helper function 
+        setLocale(stepContext.context.activity.locale);
 
         // Set the text for the prompt
-        const queryMsg = 'If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉';
+        const standardMsg = i18n.__('confirmSendEmailStepStandardMsg');
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you want me to send an email to your former employer?';
+        const retryMsg = i18n.__('confirmSendEmailStepRetryMsg');
+
+         // Set the text for the prompt
+         const queryMsg = i18n.__('confirmSendEmailStepQueryMsg'); //'If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉';
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmSendEmailStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
             unblockBotDetails.masterError = true;
             
-            // Set master error message to send
-            const errorMsg = 'Sorry Mary, I’m not able to help you.'
+            // Set error message to send
+            const errorMsg = i18n.__('confirmSendEmailStepErrorMsg');
 
-            // Send master error message
+            // Send error message
             await stepContext.context.sendActivity(errorMsg);
 
             // End the dialog and pass the updated details state machine
@@ -91,9 +97,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
                 promptMsg = queryMsg;
             }
 
-            //const promptOptions = ['Yes, email my former employer', 'No, don\'t email my former employer'];
-
-            const promptOptions = ['Yes, send email', 'No, don\'t send email'];
+            const promptOptions = i18n.__('confirmSendEmailStepStandardPromptOptions');
 
             const promptDetails = {
                 prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
@@ -133,7 +137,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
         // This message is sent if the user selects that they don't want to continue
-        const closeMsg = "Ok, no problem. I'll be here if you need me!";
+        const closeMsg = i18n.__('confirmSendEmailStepCloseMsg');;
 
         switch (intent) {
         // Proceed

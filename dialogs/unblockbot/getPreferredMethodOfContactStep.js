@@ -7,6 +7,9 @@ const {
 
 const { LuisRecognizer } = require('botbuilder-ai');
 
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
 const TEXT_PROMPT = 'TEXT_PROMPT';
 const GET_PREFFERED_METHOD_OF_CONTACT_STEP = 'GET_PREFFERED_METHOD_OF_CONTACT_STEP';
 const GET_PREFFERED_METHOD_OF_CONTACT_WATERFALL_STEP = 'GET_PREFFERED_METHOD_OF_CONTACT_WATERFALL_STEP';
@@ -43,15 +46,21 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         // Get the user details / state machine
         const unblockBotDetails = stepContext.options;
 
+         // This sets the i18n local in a helper function 
+         setLocale(stepContext.context.activity.locale);
+
         // DEBUG
-        console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails);
+        // console.log('DEBUG UNBLOCKBOTDETAILS:', unblockBotDetails);
 
         // Set the text for the prompt
-        const queryMsg = 'What\'s the best way to reach you? I can do email or text message (or both).';
+        const standardMsg = i18n.__('getPreferredMethodOfContactStepStandardMsg');
+
+        getPreferredMethodOfContactStepStandardMsg
+
 
         // Set the text for the retry prompt
-        const retryMsg = 'Sorry, do you prefer email or text or both?';
-
+        const retryMsg = i18n.__('getPreferredMethodOfContactStepRetryMsg');
+        
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.getPreferredMethodOfContactStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
@@ -72,7 +81,7 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
                 promptMsg = retryMsg;
             }
             else {
-                promptMsg = queryMsg;
+                promptMsg = standardMsg;
             }
             const promptOptions = ['Email', 'Text message', 'Both'];
 
@@ -110,9 +119,9 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
         const recognizerResult = await recognizer.recognize(stepContext.context);
 
         // Setup the possible messages that could go out
-        const sendEmailMsg = 'Ok, we\'ll email you at mary@fakeaddress.com once we gotten your Record of Employment.';
-        const sendTextMsg = 'Ok, I\'ll text you at 123-456-7890 once we\'ve gotten your Record of Employment.';
-        const sendBothMsg = 'Ok, I\'ll email you at mary@fakeaddress.com, and text you at 123-456-7890 once we\'ve gotten your Record of Employment.';
+        const sendEmailMsg = i18n.__('getPreferredMethodOfContactStepSendEmailMsg');
+        const sendTextMsg = i18n.__('getPreferredMethodOfContactStepSendTextMsg');
+        const sendBothMsg = i18n.__('getPreferredMethodOfContactStepSendBothMsg');
 
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);

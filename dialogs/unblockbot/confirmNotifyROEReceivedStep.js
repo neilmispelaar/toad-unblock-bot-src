@@ -7,6 +7,9 @@ const {
 
 const { LuisRecognizer } = require('botbuilder-ai');
 
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
 const TEXT_PROMPT = 'TEXT_PROMPT';
 const CONFIRM_NOTIFY_ROE_RECEIVED_STEP = 'CONFIRM_NOTIFY_ROE_RECEIVED_STEP';
 const CONFIRM_NOTIFY_ROE_RECEIVED_STEP_WATERFALL_STEP = 'GCONFIRM_NOTIFY_ROE_RECEIVED_STEP_WATERFALL_STEP';
@@ -37,21 +40,27 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         const unblockBotDetails = stepContext.options;
 
         // DEBUG
-        console.log('DEBUG UNBLOCKBOTDETAILS in confirmNotifyROEReceivedStep:', unblockBotDetails);
+        // console.log('DEBUG UNBLOCKBOTDETAILS in confirmNotifyROEReceivedStep:', unblockBotDetails);
 
         // Set the text for the prompt
-        const standardPromptMsg = 'Do you want me to notify you when we’ve received the Record of Employment?';
+        const standardMsg = i18n.__('confirmNotifyROEReceivedStepStandardMsg');
 
         // Set the text for the retry prompt
-        const retryPromptMsg = 'Sorry, I didn\'t quite get that. Do you want me to notify you when we’ve received the Record of Employment?';
+        const retryMsg = i18n.__('confirmNotifyROEReceivedStepRetryMsg');
+
+        // Set the text for the prompt
+        const standardPromptMsg = '';
+
+        // Set the text for the retry prompt
+        const retryPromptMsg = '';
 
         // Check if the error count is greater than the max threshold
         if (unblockBotDetails.errorCount.confirmNotifyROEReceivedStep >= MAX_ERROR_COUNT) {
             // Throw the master error flag
             unblockBotDetails.masterError = true;
 
-             // Set master error message to send
-             const errorMsg = 'Sorry Mary, I’m not able to help you.'
+            // Set master error message to send
+            const errorMsg = i18n.__('confirmNotifyROEReceivedStepErrorMsg');
 
              // Send master error message
              await stepContext.context.sendActivity(errorMsg);
@@ -75,7 +84,7 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
                 promptMsg = standardPromptMsg;
             }
             
-            const promptOptions = ['Yes, notify me', 'No, don\'t notify me'];
+            const promptOptions = i18n.__('confirmNotifyROEReceivedStepStandardPromptOptions');
 
             const promptDetails = {
                 prompt: ChoiceFactory.forChannel(stepContext.context, promptOptions, promptMsg),
@@ -112,7 +121,7 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
         // Top intent tell us which cognitive service to use.
         const intent = LuisRecognizer.topIntent(recognizerResult, 'None', 0.50);
 
-        const closeMsg = 'Ok, no problem!';
+        const closeMsg = i18n.__('confirmNotifyROEReceivedStepCloseMsg');
 
         switch (intent) {
         // Proceed

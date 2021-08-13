@@ -8,6 +8,39 @@
     "confirmLookIntoStepStandardMsg": "I looked at your application and I can see there’s a block on your file. Do you want me to look into that?",
     "confirmLookIntoStepRetryMsg": "Sorry, do you want me to take a look at your file?",
     "confirmLookIntoStepErrorMsg": "Sorry Mary, I’m not able to help you.",
-    "confirmLookIntoStepStandardPromptOptions": ["Yes please!", "No thanks"],
-    "confirmLookIntoStepCloseMsg": "Ok, no problem. Let me know if you change your mind!"
+    "confirmLookIntoStepStandardPromptOptions": [
+        "Yes please!", 
+        "No thanks"
+    ],
+    "confirmLookIntoStepCloseMsg": "Ok, no problem. Let me know if you change your mind!",
+
+    "confirmSendEmailStepStandardMsg": "So, I can see that you completed your application on February 12, and the application itself looks good. However, we still haven’t received a Record of Employment from your previous employer, Initech.",
+    "confirmSendEmailStepRetryMsg": "If you like, I can send Initech a follow-up email from the Government of Canada. That usually does the trick 😉",
+    "confirmSendEmailStepQueryMsg": "Sorry, do you want me to send an email to your former employer?",
+    "confirmSendEmailStepErrorMsg": "Sorry Mary, I’m not able to help you.",
+    "confirmSendEmailStepStandardPromptOptions": [
+        "Yes, send email",
+        "No, don't send email"
+    ],
+    "confirmSendEmailStepCloseMsg": "Ok, no problem. I'll be here if you need me!",
+
+    "getAndSendEmailStepStandardMsg": "Ok, what email address should I send it to?",
+    "getAndSendEmailStepRetryMsg": "Sorry, do you want me to send an email to your former employer?",
+    "getAndSendEmailStepConfirmMsg": "Ok, email sent!",
+
+    "confirmNotifyROEReceivedStepStandardMsg": "Do you want me to notify you when we’ve received the Record of Employment?",
+    "confirmNotifyROEReceivedStepRetryMsg": "Sorry, I didn't quite get that. Do you want me to notify you when we’ve received the Record of Employment?",
+    "confirmNotifyROEReceivedStepErrorMsg": "Sorry Mary, I’m not able to help you.",
+    "confirmNotifyROEReceivedStepStandardPromptOptions": [
+        "Yes, notify me",
+        "No, don't notify me"
+    ],
+    "confirmNotifyROEReceivedStepCloseMsg": "Ok, no problem!",
+
+    "getPreferredMethodOfContactStepStandardMsg": "What's the best way to reach you? I can do email or text message (or both).",
+    "getPreferredMethodOfContactStepRetryMsg": "Sorry, do you prefer email or text or both?",
+    "getPreferredMethodOfContactStepSendEmailMsg": "Ok, we'll email you at mary@fakeaddress.com once we gotten your Record of Employment.",
+    "getPreferredMethodOfContactStepSendTextMsg": "Ok, I'll text you at 123-456-7890 once we've gotten your Record of Employment.",
+    "getPreferredMethodOfContactStepSendBothMsg": "Ok, I'll email you at mary@fakeaddress.com, and text you at 123-456-7890 once we've gotten your Record of Employment."
+
 }
