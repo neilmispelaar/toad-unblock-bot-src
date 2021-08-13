@@ -15,9 +15,13 @@ const {
     UNBLOCK_BOT_DIALOG,
 } = require('./unblockBotDialog');
 
-const CHOICE_PROMPT = 'CHOICE_PROMPT';
-
 const { UnblockBotDetails } = require('./unblockBotDetails');
+
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
+
+const CHOICE_PROMPT = 'CHOICE_PROMPT';
 
 // The String ID name for the main dialog
 const MAIN_DIALOG = 'MAIN_DIALOG';
@@ -63,6 +67,9 @@ class MainDialog extends ComponentDialog {
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      */
     async initialStep(stepContext) {
+         // This sets the i18n local in a helper function 
+         setLocale(stepContext.context.activity.locale);
+
         const unblockBotDetails = new UnblockBotDetails();
         return await stepContext.beginDialog(UNBLOCK_BOT_DIALOG, unblockBotDetails);
     }
@@ -71,13 +78,11 @@ class MainDialog extends ComponentDialog {
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      */
     async rateStep(stepContext) {
-
-        // Add in a dely 
-        // await stepContext.context.sendActivity({ type: 'delay', value: 200 });
+        const feedbackMsg = i18n.__('mainDialogFeedbackMsg');
 
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await stepContext.prompt(CHOICE_PROMPT, {
-            prompt: 'Before you go, could I ask you to rate the service you received today?',
+            prompt: feedbackMsg,
             choices: ChoiceFactory.toChoices(['😡', '🙁', '😐', '🙂', '😄'])
         });
     }
@@ -86,7 +91,9 @@ class MainDialog extends ComponentDialog {
      * This is the final step in the main waterfall dialog.
      */
     async finalStep(stepContext) {
-        await stepContext.context.sendActivity('Ok, have a great day!');
+        const greatDayMsg = i18n.__('mainDialogGreatDayMsg');
+
+        await stepContext.context.sendActivity(greatDayMsg);
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
         return await stepContext.endDialog();
     }

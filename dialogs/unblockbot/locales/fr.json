@@ -1,0 +1,13 @@
+{
+    "unBlockBotDialogWelcomeMsg": "(FR) Hi Mary, I’m your virtual concierge!",
+    "unblockBotDialogMasterErrorMsg": "(FR) Well this is awkward. Looks like we're having some issues today...",
+
+    "mainDialogFeedbackMsg": "(FR) Before you go, could I ask you to rate the service you received today?",
+    "mainDialogGreatDayMsg": "(FR) Ok, have a great day!",
+
+    "confirmLookIntoStepStandardMsg": "(FR) I looked at your application and I can see there’s a block on your file. Do you want me to look into that?",
+    "confirmLookIntoStepRetryMsg": "(FR) Sorry, do you want me to take a look at your file?",
+    "confirmLookIntoStepErrorMsg": "(FR  Sorry Mary, I’m not able to help you.",
+    "confirmLookIntoStepStandardPromptOptions": ["FRYes please!", "FRNo thanks"],
+    "confirmLookIntoStepCloseMsg": "(FR) Ok, no problem. Let me know if you change your mind!"
+}

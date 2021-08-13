@@ -9,6 +9,9 @@ const { GetAndSendEmailStep, GET_AND_SEND_EMAIL_STEP } = require('./getAndSendEm
 const { ConfirmNotifyROEReceivedStep, CONFIRM_NOTIFY_ROE_RECEIVED_STEP } = require('./confirmNotifyROEReceivedStep');
 const { GetPreferredMethodOfContactStep, GET_PREFFERED_METHOD_OF_CONTACT_STEP } = require('./getPreferredMethodOfContactStep');
 
+// This is for the i18n stuff
+const { i18n, setLocale } = require('./locales/i18nConfig');
+
 const UNBLOCK_BOT_DIALOG = 'UNBLOCK_BOT_DIALOG';
 const MAIN_UNBLOCK_BOT_WATERFALL_DIALOG = 'MAIN_UNBLOCK_BOT_WATERFALL_DIALOG';
 
@@ -48,7 +51,10 @@ class UnblockBotDialog extends ComponentDialog {
         // Get the unblockbot details / state machine for the current user
         const unblockBotDetails = stepContext.options;
 
-        const welcomeMsg = 'Hi Mary, I’m your virtual concierge!';
+        // This sets the i18n local in a helper function 
+        setLocale(stepContext.context.activity.locale);
+         
+        const welcomeMsg = i18n.__('unBlockBotDialogWelcomeMsg');
 
         await stepContext.context.sendActivity(welcomeMsg);
 
@@ -67,7 +73,7 @@ class UnblockBotDialog extends ComponentDialog {
         const unblockBotDetails = stepContext.result;
 
         // DEBUG
-        console.log('DEBUG: unblockBotDetails:', unblockBotDetails);
+        // console.log('DEBUG: unblockBotDetails:', unblockBotDetails);
 
         switch (unblockBotDetails.confirmLookIntoStep) {
         // The confirmLookIntoStep flag in the state machine isn't set
@@ -78,7 +84,7 @@ class UnblockBotDialog extends ComponentDialog {
         // The confirmLookIntoStep flag in the state machine is set to true
         // so we are sending the user to next step
         case true:
-            console.log('DEBUG', unblockBotDetails);
+            // console.log('DEBUG', unblockBotDetails);
             return await stepContext.next(unblockBotDetails);
 
         // The confirmLookIntoStep flag in the state machine is set to false
@@ -169,7 +175,7 @@ class UnblockBotDialog extends ComponentDialog {
             // The confirmLookIntoStep flag in the state machine is set to true
             // so we are sending the user to next step
             case true:
-                console.log('DEBUG', unblockBotDetails);
+                // console.log('DEBUG', unblockBotDetails);
                 return await stepContext.next(unblockBotDetails);
 
             // The confirmLookIntoStep flag in the state machine is set to false
@@ -207,7 +213,7 @@ class UnblockBotDialog extends ComponentDialog {
         // The confirmNotifyROEReceivedStep flag in the state machine is set to true
         // so we are sending the user to next step
         case true:
-            console.log('DEBUG', unblockBotDetails);
+            // console.log('DEBUG', unblockBotDetails);
             return await stepContext.next(unblockBotDetails);
 
         // The confirmNotifyROEReceivedStep flag in the state machine is set to false
@@ -268,10 +274,14 @@ class UnblockBotDialog extends ComponentDialog {
         // Get the results of the last ran step
         const unblockBotDetails = stepContext.result;
 
-        console.log('DEBUG DETAILS: ', unblockBotDetails);
+        // DEBUG
+        // console.log('DEBUG DETAILS: ', unblockBotDetails);
 
+        // Check if a master error has occured
         if (unblockBotDetails.masterError === true) {
-            await stepContext.context.sendActivity("Well this is awkward. Looks like we're having some issues today...");
+            const masterErrorMsg = i18n.__('unblockBotDialogMasterErrorMsg');
+
+            await stepContext.context.sendActivity(masterErrorMsg);
         }
 
         return await stepContext.endDialog(unblockBotDetails);
