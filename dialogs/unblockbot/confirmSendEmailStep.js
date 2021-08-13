@@ -149,7 +149,7 @@ class ConfirmSendEmailStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmSendEmailStep = false;
 
-            stepContext.context.sendActivity(closeMsg);
+            await stepContext.context.sendActivity(closeMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
 

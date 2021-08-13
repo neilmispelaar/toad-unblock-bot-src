@@ -84,6 +84,7 @@ class GetAndSendEmailStep extends ComponentDialog {
         if (stepContext.result) {
             const confirmMsg = 'Ok, email sent!';
             await stepContext.context.sendActivity(confirmMsg);
+            
             return await stepContext.endDialog(unblockBotDetails);
         }
         // No result provided

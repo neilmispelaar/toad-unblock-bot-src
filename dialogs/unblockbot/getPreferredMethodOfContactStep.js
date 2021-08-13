@@ -124,7 +124,7 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(sendEmailMsg);
+            await stepContext.context.sendActivity(sendEmailMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
         
@@ -133,7 +133,7 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(sendTextMsg);
+            await stepContext.context.sendActivity(sendTextMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
         
@@ -142,7 +142,7 @@ class GetPreferredMethodOfContactStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.getPreferredMethodOfContactStep = true;
 
-            stepContext.context.sendActivity(sendBothMsg);
+            await stepContext.context.sendActivity(sendBothMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
        

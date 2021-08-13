@@ -128,7 +128,7 @@ class ConfirmNotifyROEReceivedStep extends ComponentDialog {
             console.log('INTENT: ', intent);
             unblockBotDetails.confirmNotifyROEReceivedStep = false;
 
-            stepContext.context.sendActivity(closeMsg);
+            await stepContext.context.sendActivity(closeMsg);
 
             return await stepContext.endDialog(unblockBotDetails);
 

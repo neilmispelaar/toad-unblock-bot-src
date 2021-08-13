@@ -160,8 +160,8 @@ class ConfirmLookIntoStep extends ComponentDialog {
         case 'confirmChoiceNegative':
             console.log('INTENT: ', intent);
 
-            stepContext.context.sendActivity(closeMsg);
-
+            await stepContext.context.sendActivity(closeMsg);
+            
             unblockBotDetails.confirmLookIntoStep = false;
             return await stepContext.endDialog(unblockBotDetails);
 

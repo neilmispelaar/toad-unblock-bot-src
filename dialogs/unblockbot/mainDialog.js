@@ -71,6 +71,10 @@ class MainDialog extends ComponentDialog {
      * Initial step in the waterfall. This will kick of the unblockbot dialog
      */
     async rateStep(stepContext) {
+
+        // Add in a dely 
+        // await stepContext.context.sendActivity({ type: 'delay', value: 200 });
+
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await stepContext.prompt(CHOICE_PROMPT, {
             prompt: 'Before you go, could I ask you to rate the service you received today?',
